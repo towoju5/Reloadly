@@ -11,32 +11,34 @@ class Reloadly
 
     public function __construct(){
         if(getenv('RELOADLY_MODE') == 'sandbox'){
-            $base_url      = getenv("RELOADLY_TEST_URL");
+            $this->base_url      = getenv("RELOADLY_TEST_URL");
         } else {
-            $base_url      = getenv("RELOADLY_LIVE_URL");
+            $this->base_url      = getenv("RELOADLY_LIVE_URL");
         }
-        $client_id      = getenv("RELOADLY_CLIENT_SECRET");
-        $client_secret  = getenv("RELOADLY_CLIENT_SECRET");
+        $this->client_id      = getenv("RELOADLY_CLIENT_ID");
+        $this->client_secret  = getenv("RELOADLY_CLIENT_SECRET");
     }
 
-    private function getToken()
+    public function getToken()
     {
         $data = [
             "client_id"     => $this->client_id,
             "client_secret" => $this->client_secret,
             "grant_type"    => "client_credentials",
-            "audience"      => $this->audience
+            "audience"      => "https://topups-sandbox.reloadly.com"
         ];
-        return self::send_request($this->auth_url, "POST", $data);
+        $res = self::send_request($this->auth_url, "POST", $data, NULL);
+        $result = json_decode($res);
+        return $result->access_token;
     }
 
     public function send_request(string $url, string $method, array $data = [], string $token=NULL)
     {
         $client = new Client();
-        $headers[] = "Content-Type: application/json";
+        $headers["Content-Type"] = "application/json";
 
         if (NULL != $token) {
-            $headers[] = "Authorization: Bearer ${token}";
+            $headers["Authorization"] = "Bearer ${token}";
         }
         
         $body = json_encode($data);
