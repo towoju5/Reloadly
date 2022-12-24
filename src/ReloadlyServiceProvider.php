@@ -17,11 +17,12 @@ class ReloadlyServiceProvider extends ServiceProvider
         // $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'reloadly');
         // $this->loadViewsFrom(__DIR__.'/../resources/views', 'reloadly');
         // $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
-        // $this->loadRoutesFrom(__DIR__.'/routes.php');
+        $this->loadRoutesFrom(__DIR__ . '/routes/web.php');
+        $this->loadRoutesFrom(__DIR__ . '/routes/api.php');
 
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                __DIR__.'/../config/config.php' => config_path('reloadly.php'),
+                __DIR__ . '/../config/config.php' => config_path('reloadly.php'),
             ], 'config');
 
             // Publishing the views.
@@ -42,6 +43,9 @@ class ReloadlyServiceProvider extends ServiceProvider
             // Registering package commands.
             // $this->commands([]);
         }
+        if (file_exists($file = app_path('src/helpers.php'))) {
+            require $file;
+        }
     }
 
     /**
@@ -50,7 +54,7 @@ class ReloadlyServiceProvider extends ServiceProvider
     public function register()
     {
         // Automatically apply the package configuration
-        $this->mergeConfigFrom(__DIR__.'/../config/config.php', 'reloadly');
+        $this->mergeConfigFrom(__DIR__ . '/../config/config.php', 'reloadly');
 
         // Register the main class to use with the facade
         $this->app->singleton('reloadly', function () {
